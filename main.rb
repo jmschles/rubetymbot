@@ -15,8 +15,11 @@ get '/' do
 end
 
 get '/etym' do
+  content_type :json
+
   token = params['token']
   text = params['text']&.downcase&.gsub(/\s+/, '+')
+
   if authenticate!(token)
     generate_response(text)
   else
@@ -39,15 +42,18 @@ def generate_response(text)
 end
 
 def make_request_to_etymonline(text)
-  RestClient.get("#{ETYMONLINE_BASE_URL}/#{text}")
+  begin
+    RestClient.get("#{ETYMONLINE_BASE_URL}/#{text}")
+  rescue
+    "NOPE"
+  end
 end
 
 def parse_response(raw_response)
-  parsed_response = Nokogiri::HTML(raw_response)
-
-  if parsed_response.text.include?('Error 404 (Not Found)')
-    not_found_response(parsed_response)
+  if raw_response == "NOPE"
+    not_found_response
   else
+    parsed_response = Nokogiri::HTML(raw_response)
     successful_response(parsed_response)
   end
 end
@@ -62,7 +68,7 @@ def successful_response(parsed_response)
   "*#{title_text}*\n\n#{etymology_text}"
 end
 
-def not_found_response(parsed_response)
+def not_found_response
   "No matching terms found :failboat:"
 end
 
