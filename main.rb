@@ -2,6 +2,8 @@ require 'sinatra'
 require 'rest-client'
 require 'nokogiri'
 
+set :port, 4222
+
 ETYMONLINE_BASE_URL = 'http://www.etymonline.com/word'
 VALID_TOKENS = [
   ENV['SM_SLACK_ETYM_TOKEN'],
