@@ -81,7 +81,7 @@ def format_blockquote(blockquote_node)
   target_node = blockquote_node.children.detect { |child| child.text != "\n" }
   return if target_node.nil?
   if target_node.is_a?(Nokogiri::XML::Text)
-    target_node.content = "> #{target_node.content}"
+    target_node.content = "\n> #{target_node.content}\n"
   else
     target_node&.prepend_child('> ')
   end
