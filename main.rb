@@ -33,6 +33,7 @@ end
 
 def authenticate!(token)
   !token.nil? && VALID_TOKENS.include?(token)
+  true
 end
 
 def generate_response(text)
@@ -63,6 +64,7 @@ def successful_response(parsed_response)
   title_text = title_markup.text
 
   etymology_markup = parsed_response.css('.word__defination--2q7ZH').first # this hurts my soul
+  etymology_markup.css('blockquote').each { |bq| format_blockquote(bq) }
   etymology_text = etymology_markup.text
 
   "*#{title_text}*\n\n#{etymology_text}"
@@ -74,4 +76,8 @@ end
 
 def format_response(raw_response_text)
   {text: raw_response_text, response_type: "in_channel"}.to_json
+end
+
+def format_blockquote(blockquote_node)
+  blockquote_node.css('p').first.prepend_child('> ')
 end
