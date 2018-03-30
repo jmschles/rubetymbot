@@ -33,7 +33,6 @@ end
 
 def authenticate!(token)
   !token.nil? && VALID_TOKENS.include?(token)
-  true
 end
 
 def generate_response(text)
@@ -79,5 +78,11 @@ def format_response(raw_response_text)
 end
 
 def format_blockquote(blockquote_node)
-  blockquote_node.css('p').first.prepend_child('> ')
+  target_node = blockquote_node.children.detect { |child| child.text != "\n" }
+  return if target_node.nil?
+  if target_node.is_a?(Nokogiri::XML::Text)
+    target_node.content = "> #{target_node.content}"
+  else
+    target_node&.prepend_child('> ')
+  end
 end
